@@ -1,27 +1,20 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useUserAuthStore } from "@/stores/userAuthStore";
 
 const Login = () => {
-  const { login } = useUserAuthStore();
   const router = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/tracks")
-      login()
-    }
-  }, [])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await fetch("/api/v1/auth/login", {
         method: "POST",
@@ -30,22 +23,24 @@ const Login = () => {
         },
         body: JSON.stringify(formData),
       });
+
       const data = await res.json();
-      console.log(data)
+
       if (!res.ok) {
-        throw new Error(data?.message);
+        setError(data?.message);
       }
-      if (data?.success) {
+      
+      if (res.status === 200) {
         setFormData({
           email: "",
           password: "",
         });
-        router.push("/tracks")
-        login()
+        router.push("/")
       }
-      localStorage.setItem("token", data?.token);
+      setLoading(false)
     } catch (error) {
-      console.log(error);
+      setError((error as Error).message);
+      setLoading(false)
     }
   };
 
@@ -98,9 +93,11 @@ const Login = () => {
               required
             />
           </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
-            className="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center md:text-2xl md:font-semibold md:mt-8"
+            disabled={loading}
+            className="mt-2 text-white bg-blue-700 cursor-pointer hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center md:text-2xl md:font-semibold md:mt-8 disabled:bg-blue-300 disabled:cursor-not-allowed"
           >
             Login
           </button>

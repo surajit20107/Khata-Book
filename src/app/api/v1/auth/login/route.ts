@@ -1,67 +1,68 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib//db/mongodb";
+import { NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/db/mongodb";
 import User from "@/models/user";
 import { LoginValidation } from "@/lib/validation/user";
-import { cookies } from "next/headers";
 
-export async function POST(NextRequest: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const { email, password } = await NextRequest.json();
-    if (!email || !password)
-      return NextResponse.json({
-        success: false,
-        message: "Please provide email and password",
-      });
+    const {
+      email,
+      password,
+    } = await req.json();
 
-    const validate = LoginValidation.safeParse({ email, password });
+    const validation = LoginValidation.safeParse({
+      email,
+      password,
+    })
 
-    if (!validate.success)
+    if (!validation.success) {
+      const issue = validation.error.issues[0];
       return NextResponse.json({
-        success: false,
-        message: validate.error.format(),
-      });
+        message: issue.message,
+      }, { status: 400 })
+    }
 
     await connectToDatabase();
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
 
-    if (!user)
+    if (!user) {
       return NextResponse.json({
-        success: false,
-        message: "Invalid email or password",
-      });
+        message: "User not found",
+      }, { status: 404 })
+    }
 
-    const isPasswordCorrect = await user.comparePassword(password);
+    const isMatch = await user.comparePassword(password)
 
-    if (!isPasswordCorrect)
+    if (!isMatch) {
       return NextResponse.json({
-        success: false,
-        message: "Invalid email or password",
-      });
+        message: "Invalid password",
+      }, { status: 400 })
+    }
 
     const token = await user.generateToken();
 
-    if (!token)
-      return NextResponse.json({
-        success: false,
-        message: "Internal server error, please try again later",
-      });
+    const response = NextResponse.json({
+      message: "Loggedin successfully",
+      id: user._id,
+      token: token,
+    }, { status: 200 })
 
-    const cookieStore = await cookies();
-
-    cookieStore.set("token", token, {
+    response.cookies.set("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production" as string,
       maxAge: 60 * 60 * 24 * 7,
-    });
+      path: "/",
+      sameSite: "lax",
+    })
 
-    return NextResponse.json({ success: true, message: "Login successfully", token: token });
+    return response;
+    
   } catch (error) {
-    console.log(error);
+    console.log(error)
     return NextResponse.json({
-      success: false,
-      message: "Internal server error, please try again later",
-    });
+      message: "Something went wrong",
+      error: (error as Error).message,
+    }, { status: 500 })
   }
 }

@@ -1,12 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useUserAuthStore } from "@/stores/userAuthStore";
 
 const Login = () => {
-  const { login } = useUserAuthStore();
   const router = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -14,16 +14,9 @@ const Login = () => {
     password: "",
   });
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/tracks")
-      login()
-    }
-  }, [])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await fetch("/api/v1/auth/register", {
         method: "POST",
@@ -32,24 +25,25 @@ const Login = () => {
         },
         body: JSON.stringify(formData),
       });
-      if (!res.ok) {
-        throw new Error("Failed to register, please try again later");
-      }
       const data = await res.json();
-      console.log(data);
-      if (data?.success) {
+      console.log(data)
+      if (!res.ok) {
+        setError(data?.message);
+      }
+
+      if (res.status === 201) {
         setFormData({
           firstName: "",
           lastName: "",
           email: "",
           password: "",
         });
-        router.push("/tracks")
-        login()
+        router.push("/")
       }
-      localStorage.setItem("token", data?.token);
+      setLoading(false)
     } catch (error) {
-      console.log(error);
+      setError((error as Error).message)
+      setLoading(false)
     }
   };
 
@@ -69,7 +63,7 @@ const Login = () => {
                 htmlFor="firstName"
                 className="block mb-2 text-sm font-medium text-gray-900 focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8"
               >
-                First Name *
+                First Name
               </label>
               <input
                 type="text"
@@ -109,7 +103,7 @@ const Login = () => {
               htmlFor="email"
               className="block mb-2 text-sm font-medium text-gray-900 focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8"
             >
-              Your email *
+              Your email
             </label>
             <input
               type="email"
@@ -129,7 +123,7 @@ const Login = () => {
               htmlFor="password"
               className="block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8"
             >
-              Your password *
+              Your password
             </label>
             <input
               type="password"
@@ -144,9 +138,11 @@ const Login = () => {
               required
             />
           </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
-            className="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center md:text-2xl md:font-semibold md:mt-8"
+            disabled={loading}
+            className="mt-2 text-white bg-blue-700 cursor-pointer hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center md:text-2xl md:font-semibold md:mt-8 disabled:bg-blue-300 disabled:cursor-not-allowed"
           >
             Create account
           </button>

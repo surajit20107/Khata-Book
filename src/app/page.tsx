@@ -1,46 +1,86 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect } from "react";
+import { MdDelete } from "react-icons/md";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { IoIosAddCircle } from "react-icons/io";
 
-const Home = () => {
+interface Records {
+  _id: string;
+  name: string;
+  amount: number;
+  description: string;
+  type: string;
+  date: string;
+}
+
+const Tracks = () => {
+  const [records, setRecords] = useState<Records[]>([]);
   const router = useRouter();
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/tracks")
-    }
-  }, [])
+  
   return (
-    <div>
-      <div className="my-4 md:mt-16">
-        <h1 className="font-bold text-3xl text-center md:text-5xl">
-          Welcome to Apna Hisab
-        </h1>
+    <div className="flex flex-wrap gap-4 px-6 justify-between md:px-18">
+      <div className="mt-2 w-full">
+        <h1 className="text-2xl font-bold text-center">Tracks</h1>
       </div>
-      <div>
-        <p className="text-center font-semibold text-lg tracking-tight md:mt-12 md:text-3xl">
-          Your personal expense tracker
-        </p>
+      <div className="w-full flex justify-end">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-1 font-semibold text-blue-500">
+          <IoIosAddCircle />
+          Record
+        </Link>
       </div>
-      <div className="mt-4 border border-zinc-700 mx-2 rounded-md">
-        <img
-          src="/audit-amico.svg"
-          alt="expenses"
-          className="w-full object-cover"
-        />
-      </div>
-      <div className="mt-8 md:mt-16">
-        <p className="text-center mt-2 font-semibold md:text-3xl">
-          Already have an account?{" "}
-          <Link href="/login">
-            <span className="text-blue-500 font-bold">Login here</span>
-          </Link>
-        </p>
-      </div>
+      
+      {records.map((record) => {
+        return (
+          <div
+            key={record?._id}
+            className="w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-md shadow-zinc-200 dark:bg-gray-800 dark:border-gray-700">
+            <h5 className="mb-2 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
+              {record?.name}
+            </h5>
+
+            <p className="mb-2 text-md font-semibold text-gray-900 dark:text-white">
+              <strong>
+                &#8377; {new Intl.NumberFormat("en-US").format(record?.amount)}
+              </strong>
+            </p>
+
+            <p className="mb-2 text-sm font-normal text-gray-700 dark:text-gray-400">
+              {record?.description}
+            </p>
+
+            <p className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-400">
+              Type: {record?.type}
+            </p>
+
+            {/* the date */}
+            <p className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-400">
+              <strong>
+                Date:{" "}
+                {
+                  new Date(record?.date)
+                    .toLocaleDateString("en-US", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })
+                    .split("T")[0]
+                }
+              </strong>
+            </p>
+
+            <button 
+              onClick={()=> alert(record?._id)}
+              className="inline-flex items-center gap-1 px-2 py-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+              <MdDelete /> Remove
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 };
 
-export default Home;
+export default Tracks;

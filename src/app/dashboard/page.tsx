@@ -1,26 +1,13 @@
 "use client"
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useUserAuthStore } from "@/stores/userAuthStore";
+import { useState } from "react";
 
 const Dashboard = () => {
-  const { logout } = useUserAuthStore();
-  const router = useRouter();
-  
   const [formData, setFormData] = useState({
     name: "",
     type: "",
     amount: "",
     description: "",
   })
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login")
-      logout()
-    }
-  }, [])
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,7 +21,7 @@ const Dashboard = () => {
       })
       const data = await res.json()
       if (data.success) {
-        router.push("/tracks")
+        
       }
       console.log(data)
     } catch (error) {

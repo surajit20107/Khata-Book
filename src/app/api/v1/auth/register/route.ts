@@ -1,70 +1,68 @@
-import { NextRequest, NextResponse } from "next/server";
-import { registerValidation } from "@/lib/validation/user";
+import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db/mongodb";
 import User from "@/models/user";
-import { cookies } from "next/headers";
+import { registerValidation } from "@/lib/validation/user";
 
-export async function POST(NextRequest: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const { firstName, lastName, email, password } = await NextRequest.json();
-
-    if (!firstName || !email || !password)
-      return NextResponse.json({
-        success: false,
-        message: "All fields are required",
-      });
-
-    const user = registerValidation.safeParse({ firstName, email, password });
-
-    if (!user.success)
-      return NextResponse.json({
-        success: false,
-        message: user.error.format(),
-      });
-
-    await connectToDatabase();
-
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser)
-      return NextResponse.json({
-        success: false,
-        message: "user already exists",
-      });
-
-    const newUser = await User.create({
+    const {
       firstName,
       lastName,
       email,
       password,
-    });
+    } = await req.json();
 
-    if (!newUser)
-      return NextResponse.json({
-        success: false,
-        message: "Internal server error, try again later",
-      });
-
-    const token = await newUser.generateToken()
-
-    if (!token) return NextResponse.json({ success: false, message: "Internal server error, please try again later" })
-
-    const cookieStore = await cookies()
-
-    cookieStore.set("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/"
+    const validation = registerValidation.safeParse({
+      firstName,
+      lastName,
+      email,
+      password,
     })
 
-    return NextResponse.json({ success: true, message: "User created successfully", token: token })
+    if (!validation.success) {
+      const issue = validation.error.issues[0];
+      return NextResponse.json({
+        message: issue.message,
+      }, { status: 400 })
+    }
 
+    await connectToDatabase();
+
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      password,
+    })
+
+    const token = await user.generateToken();
+
+    const response = NextResponse.json({
+      message: "User created successfully",
+      id: user._id,
+      token: token,
+    }, { status: 201 })
+
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" as string,
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+      sameSite: "lax",
+    })
+
+    return response;
+    
   } catch (error) {
+    if ((error as any).code === 11000) {
+      return NextResponse.json({
+        message: "Email already exists",
+      }, { status: 400 })
+    }
+    
     return NextResponse.json({
-      success: false,
-      message: "Internal server error, please try again later",
-    });
+      message: "Something went wrong",
+      error: (error as Error).message,
+    }, { status: 500 })
   }
 }
