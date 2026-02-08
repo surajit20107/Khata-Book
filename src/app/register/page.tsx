@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/utils";
 
 const Login = () => {
   const router = useRouter();
@@ -17,35 +18,46 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const res = await fetch("/api/v1/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      console.log(data)
-      if (!res.ok) {
-        setError(data?.message);
-      }
-
-      if (res.status === 201) {
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-        });
-        router.push("/")
-      }
-      setLoading(false)
-    } catch (error) {
-      setError((error as Error).message)
-      setLoading(false)
+    const res = await apiFetch("/api/v1/auth/register", "POST", formData);
+    if (res.success) {
+      router.push("/dashboard");
     }
+    setError(res.message);
+    setLoading(false);
   };
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   try {
+  //     const res = await fetch("/api/v1/auth/register", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+  //     const data = await res.json();
+  //     console.log(data)
+  //     if (!res.ok) {
+  //       setError(data?.message);
+  //     }
+
+  //     if (res.status === 201) {
+  //       setFormData({
+  //         firstName: "",
+  //         lastName: "",
+  //         email: "",
+  //         password: "",
+  //       });
+  //       router.push("/")
+  //     }
+  //     setLoading(false)
+  //   } catch (error) {
+  //     setError((error as Error).message)
+  //     setLoading(false)
+  //   }
+  // };
 
   return (
     <div className="mt-8 md:mt-20">

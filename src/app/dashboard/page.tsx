@@ -1,56 +1,77 @@
-"use client"
+"use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/utils";
+import { ToastContainer, toast } from "react-toastify";
 
 const Dashboard = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     type: "",
     amount: "",
     description: "",
-  })
-  
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      const res = await fetch("/api/v1/record", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      })
-      const data = await res.json()
-      if (data.success) {
-        
-      }
-      console.log(data)
-    } catch (error) {
-      console.log(error)
+    e.preventDefault();
+    setLoading(true);
+    const res = await apiFetch("/api/v1/hisab", "POST", formData);
+    if (res.success) {
+      toast.success(res.message);
+      router.push("/");
     }
-  }
-  
+    setError(res.message);
+    setLoading(false);
+  };
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   try {
+  //     const res = await fetch("/api/v1/record", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify(formData)
+  //     })
+  //     const data = await res.json()
+  //     if (data.success) {
+
+  //     }
+  //     console.log(data)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+
   return (
     <div>
+      <ToastContainer />
       <h1 className="mt-6 text-center text-2xl font-semibold">Dashboard</h1>
       <div className="p-4">
         <form onSubmit={handleSubmit} className="mt-4 flex flex-col">
-          <label 
+          <label
             htmlFor="name"
-            className="block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8">
+            className="block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8"
+          >
             Name *
           </label>
-          <input 
-            type="text" 
-            id="name" 
+          <input
+            type="text"
+            id="name"
             placeholder="name"
             className="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus:outline-blue-500 md:h-18 md:text-2xl md:font-semibold"
-            required 
+            required
             value={formData.name}
-            onChange={(e)=> setFormData({...formData, name: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
-          <label 
+          <label
             htmlFor="description"
-            className="mt-5 block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8">
+            className="mt-5 block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8"
+          >
             Description
           </label>
           <input
@@ -59,44 +80,55 @@ const Dashboard = () => {
             placeholder="desc"
             className="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus:outline-blue-500 md:h-18 md:text-2xl md:font-semibold"
             value={formData.description}
-            onChange={(e)=> setFormData({...formData, description: e.target.value})}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
           />
-          <label 
+          <label
             htmlFor="amount"
-            className="mt-5 block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8">
+            className="mt-5 block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8"
+          >
             Amount *
           </label>
-          <input 
-            type="number" 
-            id="amount" 
+          <input
+            type="number"
+            id="amount"
             name="amount"
             placeholder="0.00"
             className="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus:outline-blue-500 md:h-18 md:text-2xl md:font-semibold"
             required
             value={formData.amount}
-            onChange={(e)=> setFormData({...formData, amount:e.target.value})}
+            onChange={(e) =>
+              setFormData({ ...formData, amount: e.target.value })
+            }
           />
-          <label htmlFor="type"
-            className="mt-5 block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8">
+          <label
+            htmlFor="type"
+            className="mt-5 block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8"
+          >
             Type *
           </label>
-          <select 
-            name="type" 
+          <select
+            name="type"
             id="type"
             className="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 focus:outline-blue-500 md:h-18 md:text-2xl md:font-semibold"
             required
             value={formData.type}
-            onChange={(e)=> setFormData({...formData, type: e.target.value})}>
+            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+          >
             <option value="" disabled>
               Choose an option
             </option>
             <option value="send">Send</option>
             <option value="receive">Receive</option>
           </select>
+          {error && <p className="px-4 mt-2 text-red-500 text-sm">{error}</p>}
           <div className="flex justify-center items-center">
-            <button 
+            <button
               type="submit"
-              className="mt-8 w-2/4 text-white text-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center md:text-2xl md:font-semibold md:mt-8">
+              disabled={loading}
+              className="mt-8 w-2/4 text-white text-center bg-blue-700 cursor-pointer hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center md:text-2xl md:font-semibold md:mt-8 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            >
               Submit
             </button>
           </div>

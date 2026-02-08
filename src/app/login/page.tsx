@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/utils";
 
 const Login = () => {
   const router = useRouter();
@@ -15,33 +16,12 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const res = await fetch("/api/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data?.message);
-      }
-      
-      if (res.status === 200) {
-        setFormData({
-          email: "",
-          password: "",
-        });
-        router.push("/")
-      }
-      setLoading(false)
-    } catch (error) {
-      setError((error as Error).message);
-      setLoading(false)
+    const res = await apiFetch("/api/v1/auth/login", "POST", formData);
+    if (res.success) {
+      router.push("/dashboard");
     }
+    setError(res.message);
+    setLoading(false);
   };
 
   return (
@@ -77,7 +57,8 @@ const Login = () => {
           <div className="mb-5">
             <label
               htmlFor="password"
-              className="block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8">
+              className="block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8"
+            >
               Your password
             </label>
             <input

@@ -1,5 +1,5 @@
 {
-  "name": "khata-boo",
+  "name": "khata-book",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -17,6 +17,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "react-toastify": "^11.0.5",
     "zod": "^3.25.71",
     "zustand": "^5.0.6"
   },
