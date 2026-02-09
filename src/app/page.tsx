@@ -16,20 +16,41 @@ interface Records {
 }
 
 const Tracks = () => {
+  const [loading, setLoading] = useState(true);
   const [records, setRecords] = useState<Records[]>([]);
 
   const getRecords = async () => {
+    setLoading(true);
     const res = await apiFetch("/api/v1/hisab", "GET");
-    if (res && res.data) {
-      setRecords(res.data);
-    } else if (res && !res.success) {
-      toast.error(res.message || "Failed to fetch records");
+    if (!res.success) {
+      setLoading(false);
+      toast.error(res.message);
+      return;
     }
+    setRecords(res.data.data);
+    setLoading(false);
   };
+
+  const deleteRecord = async (id: string) => {
+    if(!confirm("Are you sure you want to delete this record?")) return;
+    const res = await apiFetch("/api/v1/hisab", "DELETE", { id })
+    if (!res.success) {
+      toast.error(res?.message || "Something went wrong");
+      return;
+    }
+    toast.success(res?.message || "Record deleted");
+  }
 
   useEffect(() => {
     getRecords();
+
+    // cleanup function
+    return () => {
+      setRecords([]);
+    };
   }, []);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div>
@@ -90,7 +111,7 @@ const Tracks = () => {
               </p>
 
               <button
-                onClick={() => alert(record?._id)}
+                onClick={() => deleteRecord(record?._id)}
                 className="inline-flex items-center gap-1 px-2 py-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
               >
                 <MdDelete /> Remove
