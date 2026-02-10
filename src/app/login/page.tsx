@@ -18,7 +18,7 @@ const Login = () => {
     setLoading(true);
     const res = await apiFetch("/api/v1/auth/login", "POST", formData);
     if (res.success) {
-      router.push("/dashboard");
+      router.push("/");
     }
     setError(res.message);
     setLoading(false);
