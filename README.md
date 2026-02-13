@@ -51,7 +51,7 @@ A professional and modern digital ledger application built with Next.js 15, desi
    npm run dev
    ```
 
-Open [http://localhost:5000](http://localhost:5000) with your browser to see the result.
+Open [http://localhost](http://localhost) with your browser to see the result.
 
 ## 📂 Project Structure
 
