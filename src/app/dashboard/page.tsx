@@ -27,26 +27,6 @@ const Dashboard = () => {
     setLoading(false);
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   try {
-  //     const res = await fetch("/api/v1/record", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json"
-  //       },
-  //       body: JSON.stringify(formData)
-  //     })
-  //     const data = await res.json()
-  //     if (data.success) {
-
-  //     }
-  //     console.log(data)
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
   return (
     <div>
       <ToastContainer />

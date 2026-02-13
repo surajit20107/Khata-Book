@@ -19,6 +19,13 @@ const Tracks = () => {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [records, setRecords] = useState<Records[]>([]);
+  const [editFormData, setEditFormData] = useState({
+    id: "",
+    name: "",
+    amount: 0,
+    description: "",
+    type: "",
+  });
 
   const getRecords = async () => {
     setLoading(true);
@@ -40,6 +47,25 @@ const Tracks = () => {
       return;
     }
     toast.success(res?.message || "Record deleted");
+  };
+
+  const editRecord = async (id: string) => {
+    const res = await apiFetch("/api/v1/hisab", "PUT", editFormData);
+    if (!res.success) {
+      toast.error(res?.message || "Something went wrong");
+      return;
+    }
+    toast.success(res?.message || "Record updated");
+    records.map((record) => {
+      if (record._id === id) {
+        ((record.name = editFormData.name),
+          (record.amount = editFormData.amount),
+          (record.description = editFormData.description),
+          (record.type = editFormData.type));
+      }
+      return record;
+    });
+    setEditMode(false);
   };
 
   useEffect(() => {
@@ -127,7 +153,17 @@ const Tracks = () => {
                   </button>
 
                   <button
-                    onClick={() => setEditMode(true)}
+                    onClick={() => {
+                      console.log(record);
+                      setEditMode(true);
+                      setEditFormData({
+                        id: record?._id,
+                        name: record?.name,
+                        amount: record?.amount,
+                        description: record?.description,
+                        type: record?.type,
+                      });
+                    }}
                     className="h-10 w-10 inline-flex items-center justify-center gap-1 px-2 py-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
                   >
                     <MdEdit size={20} />
@@ -140,16 +176,85 @@ const Tracks = () => {
       </div>
       {editMode && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="editForm h-40 w-60 bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6">
-            <h2 className="text-xl font-bold mb-4">Coming soon...</h2>
-
-            {/* Close Button */}
-            <button
-              onClick={() => setEditMode(false)}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg"
+          <div className="editForm bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6">
+            <h2 className="text-xl text-center font-bold mb-4">Edit Record</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                editRecord(editFormData?.id);
+              }}
+              className="flex flex-col gap-2"
             >
-              Close
-            </button>
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                value={editFormData?.name || ""}
+                onChange={(e) =>
+                  setEditFormData({ ...editFormData, name: e.target.value })
+                }
+                required
+                className="px-2 py-2 border border-gray-300 rounded-lg outline-none"
+              />
+              <input
+                type="number"
+                name="amount"
+                placeholder="Amount"
+                value={editFormData?.amount || ""}
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    amount: Number(e.target.value),
+                  })
+                }
+                required
+                className="px-2 py-2 border border-gray-300 rounded-lg outline-none"
+              />
+              <input
+                type="text"
+                name="description"
+                placeholder="Description"
+                value={editFormData?.description || ""}
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    description: e.target.value,
+                  })
+                }
+                required
+                className="px-2 py-2 border border-gray-300 rounded-lg outline-none"
+              />
+              <select
+                name="type"
+                value={editFormData?.type || ""}
+                onChange={(e) =>
+                  setEditFormData({ ...editFormData, type: e.target.value })
+                }
+                required
+                className="px-2 py-2 border border-gray-300 rounded-lg outline-none"
+              >
+                <option value="" disabled>
+                  Choose an option
+                </option>
+                <option value="send">Send</option>
+                <option value="receive">Receive</option>
+              </select>
+
+              <div className="mt-4 flex gap-2 justify-center">
+                <button
+                  onClick={() => setEditMode(false)}
+                  className="px-2 py-1 bg-red-600 text-white rounded-lg"
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  className="px-2 py-1 bg-green-600 text-white rounded-lg"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
