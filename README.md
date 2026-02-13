@@ -31,8 +31,8 @@ A professional and modern digital ledger application built with Next.js 15, desi
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd khata-book
+   git clone https://github.com/surajit20107/Khata-Book
+   cd Khata-Book
    ```
 
 2. Install dependencies:
