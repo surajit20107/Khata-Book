@@ -15,8 +15,7 @@ A professional and modern digital ledger application built with Next.js 15, desi
 - **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 - **Database**: [MongoDB](https://www.mongodb.com/)
-- **ORM**: [Mongoose](https://mongoosejs.com/)
-- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+- **ODM**: [Mongoose](https://mongoosejs.com/)
 - **Icons**: [React Icons](https://react-icons.github.io/react-icons/)
 - **Notifications**: [React Toastify](https://fkhadra.github.io/react-toastify/)
 
