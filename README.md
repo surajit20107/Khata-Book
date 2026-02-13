@@ -7,7 +7,6 @@ A professional and modern digital ledger application built with Next.js 15, desi
 - **User Authentication**: Secure Login and Registration using JWT and Bcrypt.
 - **Digital Ledger**: Track your daily transactions (Hisab) efficiently.
 - **Modern UI**: Built with Tailwind CSS 4 for a sleek, responsive design.
-- **State Management**: Powered by Zustand for fast and reliable state handling.
 - **Database**: Integrated with MongoDB using Mongoose for robust data persistence.
 - **Form Validation**: Type-safe validations with Zod.
 
