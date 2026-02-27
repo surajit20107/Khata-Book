@@ -18,11 +18,12 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const res = await apiFetch("/api/v1/auth/register", "POST", { formData });
+    const res = await apiFetch("/api/v1/auth/register", "POST", formData);
     if (res.success) {
       router.push("/");
+    } else {
+      setError(res?.message || "Something went wrong");
     }
-    setError(res.message);
     setLoading(false);
   };
 
