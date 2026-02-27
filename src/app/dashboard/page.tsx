@@ -50,7 +50,7 @@ const Dashboard = () => {
           />
           <label
             htmlFor="description"
-            className="mt-5 block mb-2 text-sm font-medium text-gray-900  focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8"
+            className="mt-5 block mb-2 text-sm font-medium text-gray-900 focus:outline-blue-500 md:text-2xl md:font-semibold md:mb-4 md:mt-8"
           >
             Description
           </label>

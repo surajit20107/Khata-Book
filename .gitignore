@@ -31,3 +31,6 @@ coverage/
 
 # Storybook build output
 .out/
+
+# replit config
+.replit

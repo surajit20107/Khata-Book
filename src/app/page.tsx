@@ -106,29 +106,29 @@ const Tracks = () => {
             return (
               <div
                 key={record?._id}
-                className="w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-md shadow-zinc-200 dark:bg-gray-800 dark:border-gray-700"
+                className="w-sm p-6 bg-[#f8f8f8] border border-gray-200 rounded-lg shadow-md shadow-zinc-200"
               >
-                <h5 className="mb-2 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
+                <h5 className="mb-2 text-lg font-semibold tracking-tight text-gray-900">
                   {record?.name}
                 </h5>
 
-                <p className="mb-2 text-md font-semibold text-gray-900 dark:text-white">
+                <p className="mb-2 text-md font-semibold text-gray-900">
                   <strong>
                     &#8377;{" "}
                     {new Intl.NumberFormat("en-US").format(record?.amount)}
                   </strong>
                 </p>
 
-                <p className="mb-2 text-sm font-normal text-gray-700 dark:text-gray-400">
+                <p className="mb-2 text-sm font-normal text-gray-700">
                   {record?.description}
                 </p>
 
-                <p className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-400">
+                <p className="mb-3 text-sm font-semibold text-gray-700">
                   Type: {record?.type}
                 </p>
 
                 {/* the date */}
-                <p className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-400">
+                <p className="mb-3 text-sm font-semibold text-gray-700">
                   <strong>
                     Date:{" "}
                     {
@@ -147,14 +147,13 @@ const Tracks = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => deleteRecord(record?._id)}
-                    className="h-10 w-10 inline-flex items-center justify-center gap-1 px-2 py-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                    className="h-10 w-10 inline-flex items-center justify-center gap-1 px-2 py-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300"
                   >
                     <MdDelete size={20} />
                   </button>
 
                   <button
                     onClick={() => {
-                      console.log(record);
                       setEditMode(true);
                       setEditFormData({
                         id: record?._id,
@@ -164,7 +163,7 @@ const Tracks = () => {
                         type: record?.type,
                       });
                     }}
-                    className="h-10 w-10 inline-flex items-center justify-center gap-1 px-2 py-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                    className="h-10 w-10 inline-flex items-center justify-center gap-1 px-2 py-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300"
                   >
                     <MdEdit size={20} />
                   </button>
@@ -176,8 +175,10 @@ const Tracks = () => {
       </div>
       {editMode && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="editForm bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6">
-            <h2 className="text-xl text-center font-bold mb-4">Edit Record</h2>
+          <div className="editForm bg-white rounded-xl shadow-xl p-6">
+            <h2 className="text-xl text-center font-bold mb-4 text-gray-900">
+              Edit Record
+            </h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
