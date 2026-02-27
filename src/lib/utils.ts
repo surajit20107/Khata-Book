@@ -6,7 +6,6 @@ export const apiFetch = async (url: string, method: string, body?: any) => {
         "Content-Type": "application/json",
       },
       credentials: "include", // important for cookies!
-      cache: "no-store",
     };
 
     if (body) {

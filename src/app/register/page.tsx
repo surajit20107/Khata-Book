@@ -20,6 +20,7 @@ const Login = () => {
     setLoading(true);
     const res = await apiFetch("/api/v1/auth/register", "POST", formData);
     if (res.success) {
+      router.refresh();
       router.push("/");
     } else {
       setError(res?.message || "Something went wrong");
