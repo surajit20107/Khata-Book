@@ -59,7 +59,6 @@ export async function POST(req: Request) {
     return response;
     
   } catch (error) {
-    console.log(error)
     return NextResponse.json({
       message: "Something went wrong",
       error: (error as Error).message,

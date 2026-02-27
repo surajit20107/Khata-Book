@@ -248,7 +248,6 @@ export async function PUT(req: Request) {
     }, { status: 200 })
     
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       {
         message: (error as Error).message || "Something went wrong",
