@@ -22,8 +22,8 @@ const Login = () => {
     } else {
       setError(res.message || "Something went wrong");
     }
-    setLoading(false);
     router.refresh();
+    setLoading(false);
   };
 
   return (
